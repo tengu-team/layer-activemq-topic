@@ -18,15 +18,18 @@ import subprocess
 
 from charms.reactive import when, when_not, set_state, remove_state
 from charmhelpers.core.hookenv import status_set, config, service_name
-
+from charmhelpers.core import unitdata
 import xml.etree.ElementTree as ET
 
 TOPIC = config()['topic']
+unitd = unitdata.kv()
 
 @when_not('activemq-topic.installed')
 @when('messagebroker.available')
 def install_activemq_topic(messagebroker):
     version = list(messagebroker.connection())[0]['version']
+    port = list(messagebroker.connection())[0]['port']
+    unitd.set('port', port)
     path = '/opt/apache-activemq/apache-activemq-{}/conf/activemq.xml'.format(version)
     subprocess.check_call(['/opt/apache-activemq/apache-activemq-{}/bin/activemq'.format(version), 'stop'])
     ET.register_namespace('','http://www.springframework.org/schema/beans')
@@ -46,9 +49,9 @@ def install_activemq_topic(messagebroker):
     subprocess.check_call(['/opt/apache-activemq/apache-activemq-{}/bin/activemq'.format(version), 'start'])
     set_state('activemq-topic.installed')
 
-@when('activemq-topic.installed', 'topic.available')
-def configure_topic(activemqtopic, messagebroker):
-    port = list(messagebroker.connection())[0]['port']
+@when('activemq-topic.installed', 'activemqtopic.available')
+def configure_topic(activemqtopic):
+    port = unitd.get('port')
     activemqtopic.configure(TOPIC, service_name(), port)
 
 
