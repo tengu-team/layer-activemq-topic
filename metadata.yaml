@@ -6,6 +6,7 @@ description: |
   It makes it possible to directly connect to a topic or queue instead of first
   connecting to the messagebroker.
 tags:
+  - amqp
   - misc
 subordinate: true
 provides:
