@@ -1,2 +1,2 @@
-includes: ['layer:basic', 'interface:activemq-topic', 'interface:activemq-sub']  # if you use any interfaces, add them here
+includes: ['layer:basic', 'layer:metrics', 'interface:activemq-topic', 'interface:activemq-sub']
 repo: https://github.com/tengu-team/layer-activemq-topic.git
